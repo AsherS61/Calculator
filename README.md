@@ -1,4 +1,4 @@
-# Sci.-Calculator
+# Calculator
 
 ## Functions
 ### Four Basic Operations, Modulo, Bracket Logic
