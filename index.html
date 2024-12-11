@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+
+    <style>
+        body {
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calc {
+            background-color: #ffffff;
+            width: 500px;
+            height: 800px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            padding: 30px;
+        }
+
+        .calc h1 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        #input {
+            width: 95%;
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            padding: 10px;
+            border: 5px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .btn {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn button {
+            height: 60px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .btn button:hover {
+            background-color: #45a049;
+        }
+
+        .btn button:active {
+            background-color: #3e8e41;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+            transform: translateY(2px);
+        }
+
+        .btn .wide {
+            grid-column: span 2;
+        }
+    </style>
+
+</head>
+<body style="background-color: whitesmoke;">
+    <div class="calc">
+    <h1 id ="calculator">Scientific Calculator</h1>
+    
+    <input type="text" id="input" readonly value="0">
+
+    <div class="btn">
+        <br>
+        <button onclick="showInput(1)">1</button>
+        <button onclick="showInput(2)">2</button>
+        <button onclick="showInput(3)">3</button>
+        <br>
+        <button onclick="showInput(4)">4</button>
+        <button onclick="showInput(5)">5</button>
+        <button onclick="showInput(6)">6</button>
+        <br>
+        <button onclick="showInput(7)">7</button>
+        <button onclick="showInput(8)">8</button>
+        <button onclick="showInput(9)">9</button>
+        <br>
+        <button onclick="showInput(0)">0</button><br>
+        <button onclick="showInput('.')">.</button>
+        <div style="height: 25px;">&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
+        <div style="height: 25px;">&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div><div>&nbsp;</div>
+        <button onclick="showInput('+')">+</button>
+        <button onclick="showInput('-')">-</button>
+        <button onclick="showInput('*')">*</button>
+        <button onclick="showInput('/')">/</button>
+        <button onclick="showInput('%')">%</button>
+        <button onclick="showInput('()')">( )</button>
+
+    </div>
+    <br>
+    <div class ="btn">
+        <br>
+        <button onclick="calc()">=</button>
+        <button onclick="del()">Back</button>
+        <button onclick="clr(9)">C</button>
+    </div>
+    </div>
+    <script>
+        var val = document.getElementById('input');
+        var bracket = false;
+
+        function showInput(x) {
+            if (val.value === "Infinity") val.value = "";
+
+            //dot
+            if ((x === '.')) {
+                if (val.value.length == 0) {
+                    val.value += '0' + x;
+                } else {
+                    val.value += x;
+                }
+            }   
+            else if (x === '()') {
+                if (!bracket) {
+                    if (val.value.length === 1 && val.value.charAt(0) === '0') {
+                        val.value = '(';
+                    } else {
+                        val.value += '(';
+                    }
+                } else {
+                    val.value += ')';
+                }
+                bracket = !bracket;
+            }
+            //operand multiple times
+            else if ((x < '0' || x > '9') && ( val.value.charAt(val.value.length-1) < '0' || val.value.charAt(val.value.length-1) > '9') && (val.value.charAt(val.value.length-1) !== '(' || val.value.charAt(val.value.length-1) !== ')' )) {
+                //console.log(x);
+                val.value = val.value.replace(val.value.charAt(val.value.length-1), x);
+            } 
+            //input into value
+            else {
+                if (val.value.length === 1 && val.value.charAt(0) === '0') {
+                    if (x > '0' && x < '9') {
+                        val.value = val.value.replace(val.value.charAt(0), x);
+                    } else {
+                        val.value += x;
+                    }
+                } else {
+                    val.value += x;
+                }
+            }
+        }
+
+        function clr() {
+            val.value = "0";
+        }
+
+        function del() {
+            val.value = val.value.substr(0, val.value.length - 1);
+            if (val.value.length == 0) {
+                val.value += '0';
+            }
+        }
+
+        function calc() {
+
+            // when there are brackets
+            while (val.value.includes('(')) {
+                var start = val.value.lastIndexOf('('); 
+                var end = val.value.indexOf(')', start);
+                if (end === -1) {
+                    alert("Missing closing brackets");
+                    return;
+                }
+                
+                // get sum in (  )
+                var innerExpression = val.value.substring(start + 1, end);
+                var sum = eval(innerExpression);
+
+                val.value = val.value.substring(0, start); 
+                showInput('*');
+                val.value += sum; 
+                if (end + 1 <= val.value.length) {
+                    showInput('*');
+                    val.value += val.value.substring(end + 1);
+                }
+            }
+
+            // catch undefined
+            try {
+                val.value = eval(val.value);
+            } catch (e) {
+                console.error("Error evaluating expression:", e);
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            let temp = event.which;
+            if ((temp >= 48 && temp <= 57)) {
+                showInput(event.key);
+            }
+        });
+    </script>
+
+</body>
+</html>
